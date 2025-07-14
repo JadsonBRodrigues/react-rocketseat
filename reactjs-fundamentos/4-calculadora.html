@@ -40,6 +40,8 @@
 
 </head>
 <body class="min-h-screen bg-linear-[180deg,_#807ECE_0%,_#8E7ECE_100%] text-(--text) font-(-font-sans)">
+
+    <h1 class="ml-13 mt-4 text-white text-3xl">My Calculator (Created by Jadson Rodrigues) </h1>
     <div id="root"></div>
 
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
@@ -140,6 +142,26 @@
 
         ];
 
+        const CalculatorContext = React.createContext();
+
+        function CalculatorProvider ({children}) {
+            const [history, setHistory] = React.useState ([]);
+
+            function updateHistory (operation, result) {
+            setHistory((prev) => [...prev, `${operation}=${result}`])
+
+            }
+            return (
+            <CalculatorContext.Provider
+            value={{history, updateHistory}}
+            >
+            {children}
+            </CalculatorContext.Provider>
+            )
+
+     
+        }
+
         function CalculatorDisplay ({operation, result}) {
             return (
             <div className={`
@@ -156,7 +178,8 @@
                     flex items-center justify-between h-9 
                 `}> {/* h9 means 36px de height */}
                 <Text variant="muted">=</Text>
-                <Text variant="blast">{result || operation}</Text> {/* Se tiver resultado, será mostrado no blast, texto maior de baixo da calculadora. Se não tiver, a operação será mostrada no blast */}
+                <Text variant="blast" className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-right">
+                    {result || operation} </Text> {/* Se tiver resultado, será mostrado no blast, texto maior de baixo da calculadora. Se não tiver, a operação será mostrada no blast */}
                 </div>
                 </div>
             )
@@ -165,6 +188,7 @@
         function Calculator () {
             const [operation, setOperation] = React.useState(''); /* Responsável por mostrar a operação */
             const [result, setResult] = React.useState('');
+            const {updateHistory} = React.useContext(CalculatorContext);
 
             function handleButtonClick(input) {
 
@@ -187,6 +211,8 @@
                 if (input === "=") {
                     const operationResult = eval(operation); /*O eval é uma funcionalidade do JS que irá executar qualquer string. Neste caso, executa as operações da calculadora */
                     setResult(operationResult);
+                    updateHistory(operation, operationResult);
+                    return;
                 }
 
                 if (result) { /*Se já existir um resultado e clicarmos novamente numa operação, o resultado será zerado e a nova operação será adicionada ao dígito no ecrã para seguirmos o cálculo*/
@@ -244,6 +270,9 @@
         }
         
         function OperationsHistory () {
+
+            const {history} = React.useContext(CalculatorContext);
+
             return (
             <Card className="w-full py-10 px-8">
                 <Text as="h1"
@@ -252,11 +281,19 @@
                 > Operations History 
                 </Text>
 
+            {history.length > 0 ?
+            (
             <ul className="flex flex-col gap-3">
-            <Text as="li"> 1 + 1 = 2 </Text>  
-            <Text as="li"> 2 + 3 + 1 = 6 </Text>  
-            <Text as="li"> 2 + 3 = 5 </Text>  
+                {history.map((value, index) =>
+            <Text key={`item-${index}`} as="li"> 
+               {value}
+                </Text>  
+                )}
             </ul>
+            ) : (
+                <Text as="p" variant="muted"> No operations founded.</Text>
+            )
+        }
             </Card>
             )
         }
@@ -265,13 +302,15 @@
         function App () {
             return (
                 <main className={`
-                "py-28 px-12 pt-16 pb-16 "
+                "py-28 px-12 pt-8 pb-12 "
                 flex flex-col sm:flex-row
                 items-center sm:items-stretch
                 gap-5
                 `}>
+            <CalculatorProvider>
              <Calculator/>
              <OperationsHistory/>
+             </CalculatorProvider>
                 </main>
             )
         }
