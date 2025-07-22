@@ -146,11 +146,28 @@
 
         function CalculatorProvider ({children}) {
             const [history, setHistory] = React.useState ([]);
+            const historyStoragekey = 'history';
+
+            React.useEffect (() => {
+                const savedHistory = localStorage.getItem(historyStoragekey);
+                setHistory(JSON.parse(savedHistory || '[]'))
+
+            }, []);
 
             function updateHistory (operation, result) {
-            setHistory((prev) => [...prev, `${operation}=${result}`])
+            setHistory((prev) => {
+                
+            const updatedHistory = [...prev, `${operation} =  ${result}`];
 
+            localStorage.setItem(
+                historyStoragekey,
+                JSON.stringify(updatedHistory)
+            )
+        
+            return updatedHistory;
+            })
             }
+
             return (
             <CalculatorContext.Provider
             value={{history, updateHistory}}
@@ -159,7 +176,7 @@
             </CalculatorContext.Provider>
             )
 
-     
+            
         }
 
         function CalculatorDisplay ({operation, result}) {
@@ -185,14 +202,13 @@
             )
         }
 
-        function Calculator () {
+        function useCalculator () {
             const [operation, setOperation] = React.useState(''); /* Responsável por mostrar a operação */
             const [result, setResult] = React.useState('');
             const {updateHistory} = React.useContext(CalculatorContext);
 
-            function handleButtonClick(input) {
-
-                if (input === "C") { /*apaga tudo quando o C é pressionado*/
+            function doOperation(input) {
+                  if (input === "C") { /*apaga tudo quando o C é pressionado*/
                     setOperation("");
                     setResult("");
                     return;
@@ -233,6 +249,19 @@
                setOperation (
                 `${operation}${input}`
             ); /*Estamos a settar que o setOperation coloca a operação do botão + o input do botão no ecrã.  */
+            }
+
+            return {
+                operation,
+                result,
+                doOperation
+            }
+        }
+
+        function Calculator () {
+            const { operation, result, doOperation } = useCalculator();
+            function handleButtonClick(input) {
+                doOperation(input);
             }
 
             return (
