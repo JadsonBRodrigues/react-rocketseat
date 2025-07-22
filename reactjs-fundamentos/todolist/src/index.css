@@ -1,7 +1,7 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+@import 'tailwindcss';
 
-:root {
+@theme {
+  --color-*: initial;
   --color-white: #ffffff;
   --color-gray-100: #f7f3f6;
   --color-gray-200: #f4e6f0;
@@ -13,5 +13,6 @@
   --color-pink-dark: #884074;
 
   --font-sans: "Cairo", sans-serif;
+  
   --shadow-sm: 0px 4px 0px rgba(54, 23, 45, 0.05);
 }

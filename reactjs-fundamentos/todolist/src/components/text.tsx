@@ -21,14 +21,32 @@ interface TextProps extends VariantProps <typeof textVariants> {
     children?: React.ReactNode;
 }
 
-export default function Text ({as="span", variant, className, children, ...props}: TextProps) {
-    const combinedClassName = [textVariants({ variant }), className]
+export default function Text ({
+    as="span", 
+    variant, 
+    className, 
+    children, 
+    ...props
+}: TextProps) {
+    return React.createElement(
+        as,
+        {className: textVariants({variant, className}),
+        ...props,
+    },
+    children
+    );
+}
+
+
+
+
+
+    /*const combinedClassName = [textVariants({ variant }), className]
     .filter(Boolean)
     .join(" ");
 
 
-     return React.createElement(as, { className: combinedClassName, ...props }, children);
-}
+     return React.createElement(as, { className: combinedClassName, ...props }, children);*/
 
 
 

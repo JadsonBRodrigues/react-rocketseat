@@ -5,7 +5,7 @@ export default function App() {
       <div className="flex flex-col gap-2"><Text variant="body-md-bold"> 
       Hello world!
       </Text>
-      <Text> Levar o cão para passear!
+      <Text className="text-green-base"> Levar o cão para passear!
       </Text>
   
       
